@@ -15,7 +15,7 @@ class Game {
         this.rightPressed = false;
         this.leftPressed = false;
         this.brickRowCount = 5;
-        this.brickColumnCount = 3;
+        this.brickColumnCount = 2;
         this.brickWidth = 75;
         this.brickHeight = 20;
         this.brickPadding = 10;
@@ -43,9 +43,9 @@ class Game {
                 this.bricks[c][r] = { x: 0, y: 0, status: 1, isBonus: 0 };
             }
         }
-        this.bricks[0][Math.floor(Math.random() * 5)].isBonus = 1;
-        this.bricks[1][Math.floor(Math.random() * 5)].isBonus = 1;
-        this.bricks[2][Math.floor(Math.random() * 5)].isBonus = 1;
+        for (let c = 0; c < this.brickColumnCount; c++) {
+            this.bricks[c][Math.floor(Math.random() * 5)].isBonus = 1;
+        }
     }
 
     setControls(rightPressed, leftPressed) {
@@ -99,7 +99,9 @@ class Game {
                         if (this.brickHit === this.brickRowCount * this.brickColumnCount) {
                             this.winSound.play();
                             this.level++;
-
+                            this.dx += 2;
+                            this.dy -= 2;
+                            this.brickColumnCount++;
                             setTimeout(() => {
                                 alert("YOU WIN, CONGRATS!");
                                 this.paddleWidth = this.paddleWidth - 15;
@@ -136,6 +138,8 @@ class Game {
                     this.loseSound.play();
                     setTimeout(() => {
                         alert("GAME OVER");
+                        this.dx = 5
+                        this.dy = -5
                         this.score = 0
                         this.lives = 3
                         this.level = 1
@@ -147,8 +151,8 @@ class Game {
                     this.fallSound.play();
                     this.x = this.canvas.width / 2;
                     this.y = this.canvas.height - 30;
-                    this.dx = this.storedx + 2;
-                    this.dy = this.storedy - 2;
+                    this.dx = this.storedx;
+                    this.dy = this.storedy;
                     this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
                 }
             }
@@ -174,8 +178,8 @@ class Game {
         this.x = this.canvas.width / 2;
         this.y = this.canvas.height - 30;
         this.brickHit = 0;
-        this.dx = 5 + 2;
-        this.dy = -5 - 2;
         this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
+        this.rightPressed = false;
+        this.leftPressed = false; 
     }
 }
