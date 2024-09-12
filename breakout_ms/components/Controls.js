@@ -47,6 +47,9 @@ class Controls {
         } else if (e.key === "Escape") {
             alert("PAUSED!");
         }
+        else if (e.key === "p" || e.key === "P") {
+            this.game.togglePause();
+        }
     }
 
     keyUpHandler(e) {

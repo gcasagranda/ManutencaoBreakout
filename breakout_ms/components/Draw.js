@@ -35,7 +35,14 @@ class Draw {
         this.ctx.closePath();
     }
 
-    drawBricks(bricks, brickRowCount, brickColumnCount, brickWidth, brickHeight, brickPadding, brickOffsetTop, brickOffsetLeft) {
+    drawBricks(bricks, brickSettings) {
+        const brickColumnCount = brickSettings.columnCount;
+        const brickRowCount = brickSettings.rowCount;
+        const brickWidth = brickSettings.width;
+        const brickHeight = brickSettings.height;
+        const brickPadding = brickSettings.padding;
+        const brickOffsetTop = brickSettings.offsetTop;
+        const brickOffsetLeft = brickSettings.offsetLeft;
         for (let c = 0; c < brickColumnCount; c++) {
             for (let r = 0; r < brickRowCount; r++) {
                 if (bricks[c][r].status === 1) {

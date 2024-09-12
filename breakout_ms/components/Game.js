@@ -14,13 +14,15 @@ class Game {
         this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
         this.rightPressed = false;
         this.leftPressed = false;
-        this.brickRowCount = 5;
-        this.brickColumnCount = 2;
-        this.brickWidth = 75;
-        this.brickHeight = 20;
-        this.brickPadding = 10;
-        this.brickOffsetTop = 30;
-        this.brickOffsetLeft = 30;
+        this.brickSettings = {
+            rowCount: 5,
+            columnCount: 2,
+            width: 75,
+            height: 20,
+            padding: 10,
+            offsetTop: 30,
+            offsetLeft: 30,
+        };
         this.score = 0;
         this.lives = 3;
         this.highscore = 0;
@@ -29,21 +31,20 @@ class Game {
         this.winSound = new Audio("assets/Audio/win.mp3");
         this.fallSound = new Audio("assets/Audio/fall.mp3");
         this.brickHit = 0;
-        this.storedx = 5; 
-        this.storedy = -5; 
         this.bricks = [];
+        this.isPaused = false;
 
         this.createBricks();
     }
 
     createBricks() {
-        for (let c = 0; c < this.brickColumnCount; c++) {
+        for (let c = 0; c < this.brickSettings.columnCount; c++) {
             this.bricks[c] = [];
-            for (let r = 0; r < this.brickRowCount; r++) {
+            for (let r = 0; r < this.brickSettings.rowCount; r++) {
                 this.bricks[c][r] = { x: 0, y: 0, status: 1, isBonus: 0 };
             }
         }
-        for (let c = 0; c < this.brickColumnCount; c++) {
+        for (let c = 0; c < this.brickSettings.columnCount; c++) {
             this.bricks[c][Math.floor(Math.random() * 5)].isBonus = 1;
         }
     }
@@ -58,16 +59,14 @@ class Game {
     }
 
     draw() {
+        if (this.isPaused) {
+            this.drawFunctions.drawText("Game Paused", this.canvas.width / 2 - 50, this.canvas.height / 2);
+            return;
+        }
         this.drawFunctions.clearCanvas();
         this.drawFunctions.drawBricks(
             this.bricks,
-            this.brickRowCount,
-            this.brickColumnCount,
-            this.brickWidth,
-            this.brickHeight,
-            this.brickPadding,
-            this.brickOffsetTop,
-            this.brickOffsetLeft
+            this.brickSettings
         );
         this.drawFunctions.drawBall(this.x, this.y, this.ballRadius);
         this.drawFunctions.drawPaddle(this.paddleX, this.paddleWidth, this.paddleHeight);
@@ -81,11 +80,11 @@ class Game {
     }
 
     collisionDetection() {
-        for (let c = 0; c < this.brickColumnCount; c++) {
-            for (let r = 0; r < this.brickRowCount; r++) {
+        for (let c = 0; c < this.brickSettings.columnCount; c++) {
+            for (let r = 0; r < this.brickSettings.rowCount; r++) {
                 const b = this.bricks[c][r];
                 if (b.status === 1) {
-                    if (this.x > b.x && this.x < b.x + this.brickWidth && this.y > b.y && this.y < b.y + this.brickHeight) {
+                    if (this.x > b.x && this.x < b.x + this.brickSettings.width && this.y > b.y && this.y < b.y + this.brickSettings.height) {
                         this.brickHit++;
                         this.hitSound.currentTime = 0;
                         this.hitSound.play();
@@ -96,12 +95,12 @@ class Game {
                         else
                             this.score += 5;
                         if (this.score > this.highscore) this.highscore = this.score;
-                        if (this.brickHit === this.brickRowCount * this.brickColumnCount) {
+                        if (this.brickHit === this.brickSettings.rowCount * this.brickSettings.columnCount) {
                             this.winSound.play();
                             this.level++;
-                            this.dx += 2;
-                            this.dy -= 2;
-                            this.brickColumnCount++;
+                            this.dx += 1;
+                            this.dy -= 1;
+                            this.brickSettings.columnCount++;
                             setTimeout(() => {
                                 alert("YOU WIN, CONGRATS!");
                                 this.paddleWidth = this.paddleWidth - 15;
@@ -151,8 +150,6 @@ class Game {
                     this.fallSound.play();
                     this.x = this.canvas.width / 2;
                     this.y = this.canvas.height - 30;
-                    this.dx = this.storedx;
-                    this.dy = this.storedy;
                     this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
                 }
             }
@@ -181,5 +178,12 @@ class Game {
         this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
         this.rightPressed = false;
         this.leftPressed = false; 
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        if (!this.isPaused) {
+            this.draw();
+        }
     }
 }
